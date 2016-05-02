@@ -31,7 +31,7 @@ class FTSyntaxHighlighter extends FLBuilderModule {
             return;
         }
 
-        $theme = get_theme_mod( 'ft_syntax_hilighter_bb_theme', 'default' );
+        $theme = get_theme_mod( 'ft_bb_syntax_hilighter_theme', 'default' );
 
         switch( $theme ) {
             case 'coy':
