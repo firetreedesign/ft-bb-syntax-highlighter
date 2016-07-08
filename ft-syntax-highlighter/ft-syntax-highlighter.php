@@ -100,7 +100,7 @@ FLBuilder::register_module('FTSyntaxHighlighter', array(
                     'code_language' => array(
                         'type'    => 'select',
                         'label'   => __('Language', 'ft-bb-syntax-highlighter'),
-                        'default' => 'php',
+                        'default' => 'markup',
                         'preview' => array(
 							'type' => 'none',
 						),
@@ -120,16 +120,29 @@ FLBuilder::register_module('FTSyntaxHighlighter', array(
 ));
 
 function ft_syntax_highlighter_field( $name, $value, $field, $settings ) {
+
+	switch( $settings->code_language ) {
+		case 'css':
+			$mode = 'css';
+			break;
+		case 'javascript':
+			$mode = 'javascript';
+			break;
+		default:
+			$mode = 'html';
+			break;
+	}
+
     ?>
     <div class="ft-syntax-highlighter-field">
     	<?php $editor_id = 'ftsyntaxhighlighter' . time() . '_' . $name; ?>
-    	<textarea id="<?php echo $editor_id; ?>" name="<?php echo $name; ?>" data-editor="<?php echo $field['editor']; ?>" <?php if(isset($field['class'])) echo ' class="'. $field['class'] .'"'; if(isset($field['rows'])) echo ' rows="'. $field['rows'] .'"'; ?>><?php echo htmlspecialchars($value); ?></textarea>
+    	<textarea id="<?php echo $editor_id; ?>" name="<?php echo $name; ?>" data-editor="<?php echo $mode; ?>" <?php if(isset($field['class'])) echo ' class="'. $field['class'] .'"'; if(isset($field['rows'])) echo ' rows="'. $field['rows'] .'"'; ?>><?php echo htmlspecialchars($value); ?></textarea>
     	<script>
 
     	jQuery(function(){
 
     		var textarea = jQuery('#<?php echo $editor_id; ?>'),
-    			mode     = '<?php echo $settings->code_language; ?>',
+    			mode     = textarea.data('editor'),
     			editDiv  = jQuery('<div>', {
     				position:   'absolute',
     				height:     parseInt(textarea.attr('rows'), 10) * 20
@@ -142,7 +155,7 @@ function ft_syntax_highlighter_field( $name, $value, $field, $settings ) {
     		editor = ace.edit(editDiv[0]);
     		editor.$blockScrolling = Infinity;
     		editor.getSession().setValue(textarea.val());
-    		// editor.getSession().setMode('ace/mode/' + mode);
+    		editor.getSession().setMode('ace/mode/' + mode);
 
     		editor.setOptions({
     	        enableBasicAutocompletion: true,
